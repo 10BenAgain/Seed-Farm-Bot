@@ -1,5 +1,7 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #define OR  |=
 #define XOR ^=
@@ -16,12 +18,17 @@
 #define L_BTN   (1 << PORTB2)
 #define R_BTN   (1 << PORTB3)
 #define SEL_BTN (1 << PORTB4)
-#define SRT_BTN (1 << PORTB5)
-#define PWR_BTN (1 << PORTC5)
 
-#define RELEASE_ALL_BUTTONS (PORTD ^= PORTD); \
-                            (PORTB ^= PORTB); \
-                            (PORTC ^= PORTC);
+/* When flashing the board, PORTCB5 (Pin 13) is used for some purpose unknown to me
+ * Instead of figuring out what, start will be mapped to PORTC0 instead so when
+ * flashing the board while in-game, the start menu doesn't open rapidly
+*/
+#define SRT_BTN (1 << PORTC0)
+#define PWR_BTN (1 << PORTC1)
+
+#define RELEASE_ALL_BUTTONS (PORTD XOR PORTD); \
+                            (PORTB XOR PORTB); \
+                            (PORTC XOR PORTC);
 
 /* Amount of frames approximately it takes to get from file select to recap */
 #define LOAD_INTO_GAME 160
@@ -55,7 +62,7 @@ const uint32_t IntervalFactor = DEFAULT;
 const uint32_t COMPARE_INTERVAL = F_INTERVAL / IntervalFactor; 
 
 /* Global variable for storing elapsed time in frame intervals */
-static uint32_t FrameCounter = 0;
+static volatile uint32_t FrameCounter = 0;
 
 typedef enum {
     A,
@@ -79,33 +86,45 @@ int main(void) {
     /* Change Ports DDRD, DDRB, and DDRC to open on for pins we need. */
     DDRD OR 0xFC; /* B11111100 */
     DDRB OR 0x3F; /* B00111111 */
-    DDRC OR 0x1;  /* B00000001 */
+    DDRC OR 0x3;  /* B00000011 */
 
-    /* Set timer1 register TCCR1B with a prescalar of 8 (Doc 15.11.2) */
-    OR_EQ_LS1(TCCR1B, CS11) /* From Table 15-6 */
-
-    /* Set Timer1 control register TCCR1A to clear on compare match (Doc 15.11.1) */
-    OR_EQ_LS1(TCCR1A, COM1A1)
+    /* Set timer1 register TCCR1B with a prescalar of 8 (Doc 15.11.2)
+     * Clear TCCR1A and set TCCR1b to CTC mode
+    */
+    TCCR1A = 0;
+    TCCR1B = (1 << WGM12) | (1 << CS11);
 
     /* Set the compare match value in OCR1A as calculated in F_INTERVAL divided by interval mode */
     OCR1A = COMPARE_INTERVAL;
 
+    /* Enable CTC interrupts for Timer1 (Doc 15.11.8) */
+    TIMSK1 OR (1 << OCIE1A);
+
+    sei();
     /* The Arduino will store the timer value in TCNT1 (Doc 15.11.4) */
 
     /* Setup values for game */
-    uint32_t start = 2088;
+    uint32_t start = 2500;
 
     uint32_t counter = 0;
 
     Button seedButton = A;
 
-    int i = 2000;
-
+#ifdef FOREVER
     while(1) {
-
-        while(i--) {
+#else
+        size_t i;
+#define STORE 5 // How many seeds to store in file
+        for(i = 0; i < STORE; i++) {
+#endif
+    /* Your code goes here */
             /* Reboot the console and navigate to game selection menu */
             RebootAndGetToMenu();
+
+            WaitFrames(100);
+
+            PressButton(A, DEFAULT_INTERVAL(1));
+            WaitFrames(DEFAULT_INTERVAL(20));
 
             /* Press A to start the game */
             PressButton(A, DEFAULT_INTERVAL(1));
@@ -142,15 +161,18 @@ int main(void) {
 
             /* Wait short interval */
             WaitFrames(DEFAULT_INTERVAL(30));
-            
+
             /* Walk down to avoid somehow clicking on sister again */
-            PressButton(DOWN, DEFAULT_INTERVAL(70));
+            PressButton(LEFT, DEFAULT_INTERVAL(70));
 
-            counter++;
-        }
-
+            // counter++;
     }
 }
+
+/* Increment the global timer on Timer1 Compare match */
+ISR(TIMER1_COMPA_vect) {
+        FrameCounter++;
+    }
 
 void PressButton(Button btn, uint32_t duration) {
     switch (btn) {
@@ -176,12 +198,9 @@ void PressButton(Button btn, uint32_t duration) {
 void WaitFrames(uint32_t frames) {
     FrameCounter = 0;
     RESET_TIMER
-    do {
-        if (TIFR1 & (1 << OCF1A)) {
-            FrameCounter++;
-            TIFR1 = (1 << OCF1A);
-        }
-    } while (frames < FrameCounter);
+    while (FrameCounter < frames){
+        // Let ISR increment timer
+    };
 }
 
 void RebootAndGetToMenu() {
@@ -195,14 +214,10 @@ void RebootAndGetToMenu() {
     PressButton(POWER, DEFAULT_INTERVAL(150));
 
     /* Wait about 8 seconds, this can probably be shortened */
-    WaitFrames(DEFAULT_INTERVAL(470));
+    WaitFrames(DEFAULT_INTERVAL(400));
 
     PressButton(A, DEFAULT_INTERVAL(1));
 
     /* Wait about 3 seconds until we are ready to Press A to start the game */
     WaitFrames(DEFAULT_INTERVAL(180));
 }
-
-
-
-
