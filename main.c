@@ -89,7 +89,7 @@ int main(void) {
     DDRC OR 0x3;  /* B00000011 */
 
     /* Set timer1 register TCCR1B with a prescalar of 8 (Doc 15.11.2)
-     * Clear TCCR1A and set TCCR1b to CTC mode
+     * Clear TCCR1A and set TCCR1B to CTC mode
     */
     TCCR1A = 0;
     TCCR1B = (1 << WGM12) | (1 << CS11);
@@ -100,72 +100,67 @@ int main(void) {
     /* Enable CTC interrupts for Timer1 (Doc 15.11.8) */
     TIMSK1 OR (1 << OCIE1A);
 
+    /* Enable global interrupts */
     sei();
     /* The Arduino will store the timer value in TCNT1 (Doc 15.11.4) */
 
     /* Setup values for game */
-    uint32_t start = 2500;
-
-    uint32_t counter = 0;
+    uint32_t start = 2088;
+    uint32_t increment = 0;
 
     Button seedButton = A;
+    size_t stored = 100;
 
 #ifdef FOREVER
     while(1) {
 #else
-        size_t i;
-#define STORE 5 // How many seeds to store in file
-        for(i = 0; i < STORE; i++) {
+    size_t i;
+    for(i = 0; i < stored; i++) {
 #endif
-    /* Your code goes here */
-            /* Reboot the console and navigate to game selection menu */
-            RebootAndGetToMenu();
+        /* Your code goes here */
+        /* Reboot the console and navigate to game selection menu */
+        RebootAndGetToMenu();
 
-            WaitFrames(100);
+        /* Press A to start the game */
+        PressButton(A, DEFAULT_INTERVAL(1));
 
-            PressButton(A, DEFAULT_INTERVAL(1));
-            WaitFrames(DEFAULT_INTERVAL(20));
+        /* Wait for the intro timer to play out */
+        WaitFrames(DEFAULT_INTERVAL(start) + increment);
 
-            /* Press A to start the game */
-            PressButton(A, DEFAULT_INTERVAL(1));
+        /* Press and hold seed button */
+        PressButton(seedButton, DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));
 
-            /* Wait for the intro timer to play out */
-            WaitFrames(DEFAULT_INTERVAL(start) + counter);
+        /* Wait for short delay */
+        WaitFrames(DEFAULT_INTERVAL(2));
 
-            /* Press and hold seed button */
-            PressButton(seedButton, DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));
+        /* Select save file*/
+        PressButton(A, DEFAULT_INTERVAL(1));
 
-            /* Wait for short delay */
-            WaitFrames(DEFAULT_INTERVAL(2));
+        /* Wait until recap starts playing */
+        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));
 
-            /* Select save file*/
-            PressButton(A, DEFAULT_INTERVAL(1));
+        /* Skip recap */
+        PressButton(B, DEFAULT_INTERVAL(1));
 
-            /* Wait until recap starts playing */
-            WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));
+        /* Wait until overworld*/
+        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));
 
-            /* Skip recap */
-            PressButton(B, DEFAULT_INTERVAL(1));
+        /* Talk to sister */
+        PressButton(A, DEFAULT_INTERVAL(1));
 
-            /* Wait until overworld*/
-            WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));
+        /* Wait for seed write and dialog box */
+        WaitFrames(DEFAULT_INTERVAL(48));
 
-            /* Talk to sister */
-            PressButton(A, DEFAULT_INTERVAL(1));
+        /* Exit dialog Box */
+        PressButton(B, DEFAULT_INTERVAL(1));
 
-            /* Wait for seed write and dialog box */
-            WaitFrames(DEFAULT_INTERVAL(48));
+        /* Wait short interval */
+        WaitFrames(DEFAULT_INTERVAL(30));
 
-            /* Exit dialog Box */
-            PressButton(B, DEFAULT_INTERVAL(1));
+        /* Walk down to avoid somehow clicking on sister again */
+        PressButton(LEFT, DEFAULT_INTERVAL(70));
 
-            /* Wait short interval */
-            WaitFrames(DEFAULT_INTERVAL(30));
-
-            /* Walk down to avoid somehow clicking on sister again */
-            PressButton(LEFT, DEFAULT_INTERVAL(70));
-
-            // counter++;
+        increment++;
     }
 }
 
