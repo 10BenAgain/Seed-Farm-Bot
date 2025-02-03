@@ -9,8 +9,6 @@
 #define LOAD_INTO_GAME      260
 #define WAIT_FOR_SAVE_MENU  360
 
-#define OR  |=
-#define XOR ^=
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
 
 #define A_BTN   (1 << PORTD2)
@@ -44,9 +42,9 @@ volatile uint16_t FrameCounter = 0;
 
 int main(void) {
     /* Board setup */
-    DDRD OR 0xFC;   // B11111100
-    DDRB OR 0x3F;   // B00111111
-    DDRC OR 0x3;    // B00000011
+    DDRD |= 0xFC;   // B11111100
+    DDRB |= 0x3F;   // B00111111
+    DDRC |= 0x3;    // B00000011
 
     TCCR1A = 0;
     OCR1A = F_INTERVAL;
@@ -96,21 +94,21 @@ int main(void) {
 }
 
 static inline void PressA(uint32_t duration) {
-    PORTD XOR A_BTN;
+    PORTD ^= A_BTN;
     WaitFrames(duration);
-    PORTD XOR A_BTN;
+    PORTD ^= A_BTN;
 }
 
 static inline void PressB(uint32_t duration) {
-    PORTD XOR B_BTN;
+    PORTD ^= B_BTN;
     WaitFrames(duration);
-    PORTD XOR B_BTN;
+    PORTD ^= B_BTN;
 }
 
 static inline void PressPower(uint32_t duration) {
-    PORTC XOR PWR_BTN;
+    PORTC ^= PWR_BTN;
     WaitFrames(duration);
-    PORTC XOR PWR_BTN;
+    PORTC ^= PWR_BTN;
 }
 
 void WaitFrames(uint32_t frames) {
