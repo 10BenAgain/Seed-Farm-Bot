@@ -47,11 +47,13 @@ int main(void) {
     DDRD OR 0xFC;   // B11111100
     DDRB OR 0x3F;   // B00111111
     DDRC OR 0x3;    // B00000011
+
     TCCR1A = 0;
+    OCR1A = F_INTERVAL;
+
     OR_EQ_LS1(TCCR1B, WGM12)
     OR_EQ_LS1(TCCR1B, CS11) // Prescaler 8
-    OCR1A = F_INTERVAL;
-    TIMSK1 OR (1 << OCIE1A);
+    OR_EQ_LS1(TIMSK1, OCIE1A)
 
 #ifdef INCREMENT
     uint16_t increment = 0;
