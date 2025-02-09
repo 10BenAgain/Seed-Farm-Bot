@@ -15,12 +15,12 @@
  * result interval by even divisors (33524 / 2, 4) where 2 = 16762 and 4 = 8381
 */
 
-#define QUARTER
+#define HALF
 #define INCREMENT
-#define SEEDS_TO_STORE      1000
-#define START               2088 // Starting point, approximately 35000 MS
-#define LOAD_INTO_GAME      260  // How many frames it takes to get from save select to overworld
-#define WAIT_FOR_SAVE_MENU  360  // How long to hold seed button down for after timer is up to get to save select menu
+#define SEEDS_TO_STORE      2000
+#define START               2075 // Starting point, approximately 34781 MS (Should hit seed A080)
+#define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to overworld
+#define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
 
@@ -60,10 +60,12 @@ int main(void) {
     DDRC |= 0x3;    // B00000011
 
     TCCR1A = 0;
-    OCR1A = F_INTERVAL;
 
     OR_EQ_LS1(TCCR1B, WGM12)
     OR_EQ_LS1(TCCR1B, CS11) // Prescaler 8
+
+    OCR1A = F_INTERVAL;
+
     OR_EQ_LS1(TIMSK1, OCIE1A)
 
 #ifdef INCREMENT
@@ -91,6 +93,7 @@ int main(void) {
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
         PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold A until save select Menu is ready */
+        WaitFrames(DEFAULT_INTERVAL(2));                 /* Wait a short delay before pressing A */
         PressA(DEFAULT_INTERVAL(1));                     /* Select save file*/
         WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until recap starts playing */
         PressB(DEFAULT_INTERVAL(1));                     /* Press B to skip recap */
