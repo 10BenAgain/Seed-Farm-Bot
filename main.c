@@ -69,7 +69,8 @@ int main(void) {
     OR_EQ_LS1(TIMSK1, OCIE1A)
 
 #ifdef INCREMENT
-    uint16_t increment = 0;
+    uint32_t start = START;
+    uint32_t increment = 0;
 #endif
 
 #ifdef FOREVER
@@ -104,9 +105,13 @@ int main(void) {
         WaitFrames(DEFAULT_INTERVAL(30));                /* Wait short interval */
 
 #ifdef INCREMENT
-        increment++;
+#ifdef HALF
+    if (increment < 1) { increment++;} else { increment = 0; start++; }
 #endif
-    }
+#ifdef QUARTER
+    if (increment < 3) { increment++;} else { increment = 0; start++;}
+#endif
+#endif
 }
 
 static inline void PressA(uint32_t duration) {
