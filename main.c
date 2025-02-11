@@ -89,7 +89,7 @@ int main(void) {
         PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game */
 
 #ifdef INCREMENT
-        WaitFrames(DEFAULT_INTERVAL(START) + increment); /* Wait for the intro timer to play out and increment timer by desired frame interval */
+        WaitFrames(DEFAULT_INTERVAL(start) + increment); /* Wait for the intro timer to play out and increment timer by desired frame interval */
 #else
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
