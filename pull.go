@@ -7,8 +7,9 @@ import (
 	"strings"
 )
 
-const offset int64 = 0x0001E006
+const offset int64 = 0x0001E000
 const bLength int = 4000
+const results string = "results.txt"
 
 func main() {
 
@@ -20,29 +21,42 @@ func main() {
 	}
 
 	sArg := os.Args[1]
-
-	f, err := os.Open(sArg)
+	dat, err := getSaveDataAtOffset(sArg, offset, bLength)
 	checkError(err)
+
+	writeSeedList(
+		makeSeedList(bLength, dat),
+		results,
+	)
+}
+
+func getSaveDataAtOffset(path string, offset int64, l int) ([]byte, error) {
+	f, err := os.Open(path)
+
+	if err != nil {
+		return nil, err
+	}
 
 	defer f.Close()
 
-	buffer := make([]byte, bLength)
-
+	buf := make([]byte, l)
 	_, err = f.Seek(offset, io.SeekStart)
-	checkError(err)
 
-	_, err = f.Read(buffer)
-	checkError(err)
+	if err != nil {
+		return nil, err
+	}
 
-	output := makeSeedList(bLength, buffer)
+	_, err = f.Read(buf)
 
-	err = writeSeedList(output, "results.txt")
-	checkError(err)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf, err
 }
 
 func writeSeedList(s []string, p string) error {
 	data := strings.Join(s, "\n")
-
 	err := os.WriteFile(p, []byte(data), 0644)
 	return err
 }
