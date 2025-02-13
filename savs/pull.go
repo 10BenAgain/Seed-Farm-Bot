@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const offset int64 = 0x0001E000
+const offset int64 = 0x0001E008
 const bLength int = 4000
 const results string = "results.txt"
 
@@ -70,8 +70,11 @@ func makeSeedList(l int, buf []byte) []string {
 	s := make([]byte, 2)
 	for i := 0; i < l-2; i += 2 {
 		s = buf[i : i+2]
-		if s[0] != 0 && s[1] != 0 {
+		if s[0] == 0 && s[1] == 0 {
+			continue
+		} else {
 			out = append(out, fmt.Sprintf("'%02X%02X", s[1], s[0]))
+
 		}
 	}
 	return out
