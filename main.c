@@ -85,13 +85,11 @@ int main(void) {
         PressPower(DEFAULT_INTERVAL(150));               /* Hold Power button */
         WaitFrames(DEFAULT_INTERVAL(400));               /* Wait about 8 seconds, this can probably be shortened */
         PressA(DEFAULT_INTERVAL(1));                     /* Continue into the Main DS menu */
-        WaitFrames(DEFAULT_INTERVAL(
-                           180));               /* Wait about 3 seconds until we are ready to Press A to start the game */
+        WaitFrames(DEFAULT_INTERVAL(180));               /* Wait about 3 seconds until we are ready to Press A to start the game */
         PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game */
 
 #ifdef INCREMENT
-        WaitFrames(DEFAULT_INTERVAL(start) +
-                   increment); /* Wait for the intro timer to play out and increment timer by desired frame interval */
+        WaitFrames(DEFAULT_INTERVAL(start) + increment); /* Wait for the intro timer to play out and increment timer by desired frame interval */
 #else
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
@@ -115,7 +113,10 @@ int main(void) {
         }
 #endif
 #ifdef QUARTER
-        if (increment < 3) { increment++;} else { increment = 0; start++;}
+        if (increment < 3) { increment++;}
+        else {
+            increment = 0; start++;
+        }
 #endif
 #endif
     }
