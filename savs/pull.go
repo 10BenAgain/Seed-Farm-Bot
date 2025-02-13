@@ -70,11 +70,8 @@ func makeSeedList(l int, buf []byte) []string {
 	s := make([]byte, 2)
 	for i := 0; i < l-2; i += 2 {
 		s = buf[i : i+2]
-		if s[0] == 0 && s[1] == 0 {
-			continue
-		} else {
+		if !(s[0] == 0 && s[1] == 0) {
 			out = append(out, fmt.Sprintf("'%02X%02X", s[1], s[0]))
-
 		}
 	}
 	return out
