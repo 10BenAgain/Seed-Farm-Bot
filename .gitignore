@@ -1,3 +1,5 @@
 .idea/
 *.hex
 *.elf
+*.sav
+*.txt   
