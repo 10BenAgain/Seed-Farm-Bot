@@ -7,9 +7,12 @@ import (
 	"strings"
 )
 
-const offset int64 = 0x0001E008
-const bLength int = 4000
-const results string = "results.txt"
+const (
+	Offset      int64 = 0x0001E008
+	BlockLength int   = 4000
+)
+
+var results string = "results.txt"
 
 func main() {
 
@@ -21,16 +24,16 @@ func main() {
 	}
 
 	sArg := os.Args[1]
-	dat, err := getSaveDataAtOffset(sArg, offset, bLength)
+	dat, err := getSaveDataAtOffset(sArg, Offset, BlockLength)
 	checkError(err)
 
 	writeSeedList(
-		makeSeedList(bLength, dat),
+		makeSeedList(BlockLength, dat),
 		results,
 	)
 }
 
-func getSaveDataAtOffset(path string, offset int64, l int) ([]byte, error) {
+func getSaveDataAtOffset(path string, Offset int64, l int) ([]byte, error) {
 	f, err := os.Open(path)
 
 	if err != nil {
@@ -40,7 +43,7 @@ func getSaveDataAtOffset(path string, offset int64, l int) ([]byte, error) {
 	defer f.Close()
 
 	buf := make([]byte, l)
-	_, err = f.Seek(offset, io.SeekStart)
+	_, err = f.Seek(Offset, io.SeekStart)
 
 	if err != nil {
 		return nil, err
@@ -75,12 +78,6 @@ func makeSeedList(l int, buf []byte) []string {
 		}
 	}
 	return out
-}
-
-func printSeedList(ls []string) {
-	for _, o := range ls {
-		fmt.Println(o)
-	}
 }
 
 func checkError(e error) {
