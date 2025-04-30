@@ -22,4 +22,4 @@ flash: $(PROG).hex
 
 clean:
 	rm -f *.o *.elf *.hex
-
+.PHONY: clean
