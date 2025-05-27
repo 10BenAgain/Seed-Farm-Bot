@@ -8,7 +8,7 @@ DUDE  := avrdude
 CLOCK := 16000000UL
 CHIP  := atmega328p
 
-OPT   := -Os
+OPT   := -Os -mcall-prologues
 FLAGS := -Wall -Wextra -g
 
 all: $(PROG).hex
