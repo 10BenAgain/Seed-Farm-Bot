@@ -15,10 +15,28 @@
  * result interval by even divisors (33524 / 2, 4) where 2 = 16762 and 4 = 8381
 */
 
-#define HALF
+
+/*
+------------STEREO/LA/A--------------
+ 3500 - 3540
+ 3690 - 3730
+ 3870 - 3900
+ 4110 - 4140
+ 4210 - 4240
+
+-------------MONO/LA/L---------------
+ 2050 - 2100
+ 2150 - 2180
+ 2430 - 2460
+ 2750 - 2790
+ 3110 - 3140
+ 4120 - 4280
+
+*/
+#define DEFAULT
 #define INCREMENT
-#define SEEDS_TO_STORE      2000
-#define START               2075 // Starting point, approximately 34781 MS (Should hit seed A080)
+#define SEEDS_TO_STORE      10
+#define START               4126 // Starting point, approximately 34781 MS (Should hit seed A080)
 #define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to overworld
 #define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
 
@@ -47,9 +65,9 @@
 
 void WaitFrames(uint32_t frames);
 
-static inline void PressA(uint32_t duration);
-static inline void PressB(uint32_t duration);
-static inline void PressPower(uint32_t duration);
+void PressA(uint32_t duration);
+void PressB(uint32_t duration);
+void PressPower(uint32_t duration);
 
 volatile uint16_t FrameCounter = 0;
 
@@ -76,33 +94,35 @@ int main(void) {
 #ifdef FOREVER
     while(1) {
 #else
-    size_t i;
-    size_t stored = SEEDS_TO_STORE;
-    for(i = 0; i < stored; i++) {
+    for(size_t i = 0; i < SEEDS_TO_STORE; i++) {
 #endif
-        PressPower(DEFAULT_INTERVAL(150));               /* Hold Power Button for about 2 seconds */
-        WaitFrames(DEFAULT_INTERVAL(60));                /* Wait one second */
-        PressPower(DEFAULT_INTERVAL(150));               /* Hold Power button */
-        WaitFrames(DEFAULT_INTERVAL(400));               /* Wait about 8 seconds, this can probably be shortened */
-        PressA(DEFAULT_INTERVAL(1));                     /* Continue into the Main DS menu */
+        PressPower(DEFAULT_INTERVAL(150));               /* Hold Power Button for about 2 seconds                                */
+        WaitFrames(DEFAULT_INTERVAL(60));                /* Wait one second                                                      */
+        PressPower(DEFAULT_INTERVAL(150));               /* Hold Power button                                                    */
+        WaitFrames(DEFAULT_INTERVAL(400));               /* Wait about 8 seconds, this can probably be shortened                 */
+        PressA(DEFAULT_INTERVAL(1));                     /* Continue into the Main DS menu                                       */
         WaitFrames(DEFAULT_INTERVAL(180));               /* Wait about 3 seconds until we are ready to Press A to start the game */
-        PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game */
+        PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game                                        */
 
 #ifdef INCREMENT
         WaitFrames(DEFAULT_INTERVAL(start) + increment); /* Wait for the intro timer to play out and increment timer by desired frame interval */
 #else
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
-        PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold A until save select Menu is ready */
-        WaitFrames(DEFAULT_INTERVAL(2));                 /* Wait a short delay before pressing A */
-        PressA(DEFAULT_INTERVAL(1));                     /* Select save file*/
-        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until recap starts playing */
-        PressB(DEFAULT_INTERVAL(1));                     /* Press B to skip recap */
-        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until overworld*/
-        PressA(DEFAULT_INTERVAL(1));                     /* Talk to sister */
-        WaitFrames(DEFAULT_INTERVAL(48));                /* Wait for seed write and dialog box */
-        PressB(DEFAULT_INTERVAL(1));                     /* Exit dialog Box */
-        WaitFrames(DEFAULT_INTERVAL(30));                /* Wait short interval */
+        PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold A until save select Menu is ready  */
+        WaitFrames(DEFAULT_INTERVAL(2));                 /* Wait a short delay before pressing A    */
+        PressA(DEFAULT_INTERVAL(1));                     /* Select save file                        */
+        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until recap starts playing         */
+        PressB(DEFAULT_INTERVAL(1));                     /* Press B to skip recap                   */
+        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until overworld                    */
+        PressA(DEFAULT_INTERVAL(1));                     /* Talk to sister                          */
+        WaitFrames(DEFAULT_INTERVAL(48));                /* Wait for seed write and dialog box      */
+        PressB(DEFAULT_INTERVAL(1));                     /* Exit dialog Box                         */
+        WaitFrames(DEFAULT_INTERVAL(30));                /* Wait short interval                     */
+
+#ifdef DEFAULT
+        start++;
+#endif
 
 #ifdef INCREMENT
 #ifdef HALF
@@ -122,19 +142,22 @@ int main(void) {
     }
 }
 
-static inline void PressA(uint32_t duration) {
+void
+PressA(uint32_t duration) {
     PORTD ^= A_BTN;
     WaitFrames(duration);
     PORTD ^= A_BTN;
 }
 
-static inline void PressB(uint32_t duration) {
+void
+PressB(uint32_t duration) {
     PORTD ^= B_BTN;
     WaitFrames(duration);
     PORTD ^= B_BTN;
 }
 
-static inline void PressPower(uint32_t duration) {
+void
+PressPower(uint32_t duration) {
     PORTC ^= PWR_BTN;
     WaitFrames(duration);
     PORTC ^= PWR_BTN;
