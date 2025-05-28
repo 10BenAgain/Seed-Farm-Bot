@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-
 /* How Frame Interval is calculated
  * 59.65549883230804 FPS = 16.76291405778042 MS = 0.016762914057780419624 Seconds
  * Target period is 0.016762914057780419624
@@ -17,30 +16,35 @@
 
 #define DEFAULT
 #define INCREMENT
-#define SEEDS_TO_STORE      10
-#define START               4126 // Starting point, approximately 34781 MS (Should hit seed A080)
+#define SEED_BUTTON_A // START or L or A
+
+#define SEEDS_TO_STORE      5
+#define START               4221 // First frame
 #define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to overworld
 #define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
+#define GBA_OFFSET          28
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
 
 #define A_BTN   (1 << PORTD2)
 #define B_BTN   (1 << PORTD3)
+#define L_BTN   (1 << PORTD4)
+#define ST_BTN  (1 << PORTD5)
 #define PWR_BTN (1 << PORTC1)
 
 #ifdef DEFAULT
-#define F_INTERVAL 33524
-#define DEFAULT_INTERVAL(x) ((x))
+    #define F_INTERVAL 33524
+    #define DEFAULT_INTERVAL(x) ((x))
 #endif
 
 #ifdef HALF
-#define F_INTERVAL 16762
-#define DEFAULT_INTERVAL(x) ((x)*2)
+    #define F_INTERVAL 16762
+    #define DEFAULT_INTERVAL(x) ((x)*2)
 #endif
 
 #ifdef QUARTER
-#define F_INTERVAL 8381
-#define DEFAULT_INTERVAL(x) ((x)*4)
+    #define F_INTERVAL 8381
+    #define DEFAULT_INTERVAL(x) ((x)*4)
 #endif
 
 #define RESET_TIMER (TCNT1 = 0);
@@ -50,6 +54,14 @@ void WaitFrames(uint32_t frames);
 void PressA(uint32_t duration);
 void PressB(uint32_t duration);
 void PressPower(uint32_t duration);
+
+#ifdef SEED_BUTTON_L
+    void PressL(uint32_t duration);
+#endif
+
+#ifdef SEED_BUTTON_START
+    void PressStart(uint32_t duration);
+#endif
 
 volatile uint16_t FrameCounter = 0;
 
@@ -69,8 +81,10 @@ int main(void) {
     OR_EQ_LS1(TIMSK1, OCIE1A)
 
 #ifdef INCREMENT
-    uint32_t start = START;
-    uint32_t increment = 0;
+    uint32_t start = START + GBA_OFFSET;
+    #ifdef HALF | QUARTER
+        uint32_t increment = 0;
+    #endif
 #endif
 
 #ifdef FOREVER
@@ -87,41 +101,55 @@ int main(void) {
         PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game                                        */
 
 #ifdef INCREMENT
-        WaitFrames(DEFAULT_INTERVAL(start) + increment); /* Wait for the intro timer to play out and increment timer by desired frame interval */
+        WaitFrames(DEFAULT_INTERVAL(start));             /* Wait for the intro timer to play out and increment timer by desired frame interval */
+    #ifdef HALF | QUARTER
+        WaitFrames(increment);
+    #endif
 #else
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
-        PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold A until save select Menu is ready  */
-        WaitFrames(DEFAULT_INTERVAL(2));                 /* Wait a short delay before pressing A    */
-        PressA(DEFAULT_INTERVAL(1));                     /* Select save file                        */
-        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until recap starts playing         */
-        PressB(DEFAULT_INTERVAL(1));                     /* Press B to skip recap                   */
-        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));    /* Wait until overworld                    */
-        PressA(DEFAULT_INTERVAL(1));                     /* Talk to sister                          */
-        WaitFrames(DEFAULT_INTERVAL(48));                /* Wait for seed write and dialog box      */
-        PressB(DEFAULT_INTERVAL(1));                     /* Exit dialog Box                         */
-        WaitFrames(DEFAULT_INTERVAL(30));                /* Wait short interval                     */
 
-#ifdef DEFAULT
-        start++;
+#ifdef SEED_BUTTON_L
+        PressL(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold A until save select Menu is ready  */
 #endif
+
+#ifdef SEED_BUTTON_START
+        PressStart(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU)); /* Hold A until save select Menu is ready  */
+#endif
+
+#ifdef SEED_BUTTON_A
+        PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));     /* Hold A until save select Menu is ready  */
+#endif
+        WaitFrames(DEFAULT_INTERVAL(2));                  /* Wait a short delay before pressing A    */
+        PressA(DEFAULT_INTERVAL(1));                      /* Select save file                        */
+        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));     /* Wait until recap starts playing         */
+        PressB(DEFAULT_INTERVAL(1));                      /* Press B to skip recap                   */
+        WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));     /* Wait until overworld                    */
+        PressA(DEFAULT_INTERVAL(1));                      /* Talk to sister                          */
+        WaitFrames(DEFAULT_INTERVAL(48));                 /* Wait for seed write and dialog box      */
+        PressB(DEFAULT_INTERVAL(1));                      /* Exit dialog Box                         */
+        WaitFrames(DEFAULT_INTERVAL(30));                 /* Wait short interval                     */
 
 #ifdef INCREMENT
-#ifdef HALF
-        if (increment < 1) { increment++; }
-        else {
-            increment = 0;
+    #ifdef DEFAULT
             start++;
-        }
-#endif
-#ifdef QUARTER
-        if (increment < 3) { increment++;}
-        else {
-            increment = 0; start++;
-        }
-#endif
+    #endif
+    #ifdef HALF
+            if (increment < 1) { increment++; }
+            else {
+                increment = 0;
+                start++;
+            }
+    #endif
+    #ifdef QUARTER
+            if (increment < 3) { increment++;}
+            else {
+                increment = 0; start++;
+            }
+    #endif
 #endif
     }
+    return 0;
 }
 
 void
@@ -138,6 +166,24 @@ PressB(uint32_t duration) {
     PORTD ^= B_BTN;
 }
 
+#ifdef SEED_BUTTON_L
+    void
+    PressL(uint32_t duration) {
+        PORTD ^= L_BTN;
+        WaitFrames(duration);
+        PORTD ^= L_BTN;
+}
+#endif
+
+#ifdef SEED_BUTTON_START
+    void
+    PressStart(uint32_t duration) {
+        PORTD ^= ST_BTN;
+        WaitFrames(duration);
+        PORTD ^= ST_BTN;
+    }
+#endif
+
 void
 PressPower(uint32_t duration) {
     PORTC ^= PWR_BTN;
@@ -145,7 +191,8 @@ PressPower(uint32_t duration) {
     PORTC ^= PWR_BTN;
 }
 
-void WaitFrames(uint32_t frames) {
+void
+WaitFrames(uint32_t frames) {
     FrameCounter = 0;
     RESET_TIMER
     while (FrameCounter < frames){
