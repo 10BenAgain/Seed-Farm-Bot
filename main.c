@@ -16,10 +16,10 @@
 
 #define DEFAULT
 #define INCREMENT
-#define SEED_BUTTON_A // START or L or A
+#define SEED_BUTTON_START // START or L or A
 
-#define SEEDS_TO_STORE      5
-#define START               4221 // First frame
+#define SEEDS_TO_STORE      6
+#define START               4475 // First frame
 #define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to overworld
 #define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
 #define GBA_OFFSET          28
@@ -62,8 +62,6 @@ void PressPower(uint32_t duration);
 #ifdef SEED_BUTTON_START
     void PressStart(uint32_t duration);
 #endif
-
-volatile uint16_t FrameCounter = 0;
 
 int main(void) {
     /* Board setup */
@@ -193,11 +191,11 @@ PressPower(uint32_t duration) {
 
 void
 WaitFrames(uint32_t frames) {
-    FrameCounter = 0;
+    uint32_t counter = 0;
     RESET_TIMER
-    while (FrameCounter < frames){
+    while (counter < frames){
         if (TIFR1 & (1 << OCF1A)) {
-            FrameCounter++;
+            counter++;
             OR_EQ_LS1(TIFR1, OCF1A)
         }
     }
