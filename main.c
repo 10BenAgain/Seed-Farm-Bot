@@ -82,7 +82,7 @@ int main(void) {
 
 #ifdef INCREMENT
     uint32_t start = START + GBA_OFFSET;
-    #ifdef HALF | QUARTER
+    #if defined HALF || defined QUARTER
         uint32_t increment = 0;
     #endif
 #endif
@@ -102,7 +102,7 @@ int main(void) {
 
 #ifdef INCREMENT
         WaitFrames(DEFAULT_INTERVAL(start));             /* Wait for the intro timer to play out and increment timer by desired frame interval */
-    #ifdef HALF | QUARTER
+    #if defined HALF || defined QUARTER
         WaitFrames(increment);
     #endif
 #else
@@ -110,11 +110,11 @@ int main(void) {
 #endif
 
 #ifdef SEED_BUTTON_L
-        PressL(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold A until save select Menu is ready  */
+        PressL(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold L until save select Menu is ready  */
 #endif
 
 #ifdef SEED_BUTTON_START
-        PressStart(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU)); /* Hold A until save select Menu is ready  */
+        PressStart(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU)); /* Hold Start until save select Menu is ready  */
 #endif
 
 #ifdef SEED_BUTTON_A
