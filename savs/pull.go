@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"os"
@@ -31,6 +32,11 @@ func main() {
 		makeSeedList(BlockLength, dat),
 		results,
 	)
+
+	// err := clearSaveBlock("FR_BLANK.sav")
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 func getSaveDataAtOffset(path string, Offset int64, l int) ([]byte, error) {
@@ -39,18 +45,16 @@ func getSaveDataAtOffset(path string, Offset int64, l int) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer f.Close()
 
 	buf := make([]byte, l)
-	_, err = f.Seek(Offset, io.SeekStart)
 
+	_, err = f.Seek(Offset, io.SeekStart)
 	if err != nil {
 		return nil, err
 	}
 
 	_, err = f.Read(buf)
-
 	if err != nil {
 		return nil, err
 	}
@@ -64,19 +68,34 @@ func writeSeedList(s []string, p string) error {
 	return err
 }
 
+func clearSaveBlock(p string) error {
+	f, err := os.OpenFile(p, os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	blanks := make([]byte, BlockLength*2)
+	_, err = f.WriteAt(blanks, 0x1E000)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func makeSeedList(l int, buf []byte) []string {
 	if l%2 != 0 {
 		return nil
 	}
 
 	out := []string{}
-	s := make([]byte, 2)
 	for i := 0; i < l-2; i += 2 {
-		s = buf[i : i+2]
-		if !(s[0] == 0 && s[1] == 0) {
-			out = append(out, fmt.Sprintf("'%02X%02X", s[1], s[0]))
+		n := binary.LittleEndian.Uint16(buf[i : i+2])
+		if n > 0 {
+			out = append(out, fmt.Sprintf("%04X", n))
 		}
 	}
+
 	return out
 }
 
