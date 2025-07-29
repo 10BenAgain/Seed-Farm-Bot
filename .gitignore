@@ -1,5 +1,7 @@
 .idea/
+.vscode/
 *.hex
 *.elf
-*.sav
-*.txt   
+*.txt
+*.exe
+savs/results/
