@@ -14,15 +14,14 @@
  * result interval by even divisors (33524 / 2, 4) where 2 = 16762 and 4 = 8381
 */
 
-#define DEFAULT
+#define HALF
 #define INCREMENT
 #define SEED_BUTTON_START // START or L or A
 
-#define SEEDS_TO_STORE      6
-#define START               4475 // First frame
+#define SEEDS_TO_STORE      2000
+#define START               2075 // First frame
 #define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to overworld
 #define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
-#define GBA_OFFSET          28
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
 
@@ -79,7 +78,7 @@ int main(void) {
     OR_EQ_LS1(TIMSK1, OCIE1A)
 
 #ifdef INCREMENT
-    uint32_t start = START + GBA_OFFSET;
+    uint32_t start = START;
     #if defined HALF || defined QUARTER
         uint32_t increment = 0;
     #endif
@@ -88,7 +87,7 @@ int main(void) {
 #ifdef FOREVER
     while(1) {
 #else
-    for(size_t i = 0; i < SEEDS_TO_STORE; i++) {
+    for (size_t j = 0; j < SEEDS_TO_STORE; j++) {
 #endif
         PressPower(DEFAULT_INTERVAL(150));               /* Hold Power Button for about 2 seconds                                */
         WaitFrames(DEFAULT_INTERVAL(60));                /* Wait one second                                                      */
@@ -100,9 +99,9 @@ int main(void) {
 
 #ifdef INCREMENT
         WaitFrames(DEFAULT_INTERVAL(start));             /* Wait for the intro timer to play out and increment timer by desired frame interval */
-    #if defined HALF || defined QUARTER
+#if defined HALF || defined QUARTER
         WaitFrames(increment);
-    #endif
+#endif
 #else
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
@@ -129,25 +128,24 @@ int main(void) {
         WaitFrames(DEFAULT_INTERVAL(30));                 /* Wait short interval                     */
 
 #ifdef INCREMENT
-    #ifdef DEFAULT
+#ifdef DEFAULT
+        start++;
+#endif
+#ifdef HALF
+        if (increment < 1) { increment++; }
+        else {
+            increment = 0;
             start++;
-    #endif
-    #ifdef HALF
-            if (increment < 1) { increment++; }
-            else {
-                increment = 0;
-                start++;
-            }
-    #endif
-    #ifdef QUARTER
-            if (increment < 3) { increment++;}
-            else {
-                increment = 0; start++;
-            }
-    #endif
+        }
+#endif
+#ifdef QUARTER
+        if (increment < 3) { increment++;}
+        else {
+            increment = 0; start++;
+        }
+#endif
 #endif
     }
-    return 0;
 }
 
 void
