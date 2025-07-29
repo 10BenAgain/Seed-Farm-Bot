@@ -2,18 +2,19 @@ CC    := avr-gcc
 COPY  := avr-objcopy
 
 PROG  := main
-PORT  := COM4
+PORT  := COM5
 DUDE  := avrdude
 
 CLOCK := 16000000UL
 CHIP  := atmega328p
 
-OPT   := -Os
+OPT   := -Os -mcall-prologues
+FLAGS := -Wall -Wextra -g
 
 all: $(PROG).hex
 
 $(PROG).hex: $(PROG).c
-	$(CC) $(OPT) -DF_CPU=$(CLOCK) -mmcu=$(CHIP) -o $(PROG).elf $(PROG).c
+	$(CC) $(FLAGS) $(OPT) -DF_CPU=$(CLOCK) -mmcu=$(CHIP) -o $(PROG).elf $(PROG).c
 	$(COPY) -O ihex -R .eeprom $(PROG).elf $(PROG).hex
 
 flash: $(PROG).hex
@@ -21,4 +22,4 @@ flash: $(PROG).hex
 
 clean:
 	rm -f *.o *.elf *.hex
-
+.PHONY: clean
