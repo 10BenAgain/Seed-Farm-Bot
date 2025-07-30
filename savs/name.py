@@ -81,9 +81,13 @@ def main(args: list[str]) -> None:
 
     btn, snd = get_game_options(get_trainer_section(get_active_block(data)))
 
-    shutil.copy(args[1], f"Results/{args[2]}_{count}_FR_{snd}_{btn}.sav")
+    shutil.copyfile(
+        args[1], 
+        f"{args[2]}/{args[3]}_{count}_FR_{snd}_{btn}_{args[4]}.sav",
+    )
     
 if __name__ == "__main__":
+    # Input PATH, Output PATH, Start Value, Button Val
     main(sys.argv)
 
             

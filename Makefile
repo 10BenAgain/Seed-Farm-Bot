@@ -16,8 +16,8 @@ AVR		:= -DF_CPU=$(CLOCK) -mmcu=$(CHIP)
 
 #----------- BOT VALUES ----------------------------------#
 START		:= 2075			 
-SEEDS 		:= 2000			 # Number of seeds to store
-BUTTON 		:= A			 # A, L, START
+SEEDS 		:= 2000			 
+BUTTON 		:= A			 
 INTERVAL 	:= HALF 		 # DEFAULT, HALF, QUARTER
 
 CDEFS		:= 					\
