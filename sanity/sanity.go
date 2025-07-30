@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	AButtonCols     = []int{3, 4, 5, 6, 7} // and 8
+	AButtonCols     = []int{3, 4, 5, 6, 7, 8}
 	StartButtonCols = []int{9, 10, 11, 12, 13, 14}
 	LButtonCols     = []int{15, 16}
 )
@@ -66,8 +66,11 @@ func main() {
 		if data, err := gt(); err != nil {
 			panic(err)
 		} else {
-			fmt.Println("Results for A Button Sanity Checks (Cols D-I)")
-			printResultTable(data, AButtonCols)
+			printResultTable(
+				data,
+				AButtonCols,
+				"Results for A Button Sanity Checks (Cols D-I)",
+			)
 		}
 	}()
 
@@ -78,8 +81,11 @@ func main() {
 		if data, err := gt(); err != nil {
 			panic(err)
 		} else {
-			fmt.Println("Results for Start Button Sanity Checks (Cols J-O)")
-			printResultTable(data, StartButtonCols)
+			printResultTable(
+				data,
+				StartButtonCols,
+				"Results for Start Button Sanity Checks (Cols J-O)",
+			)
 		}
 	}()
 
@@ -90,13 +96,15 @@ func main() {
 		if data, err := gt(); err != nil {
 			panic(err)
 		} else {
-			fmt.Println("Results for Start Button Sanity Checks (Cols P-Q)")
-			printResultTable(data, LButtonCols)
+			printResultTable(
+				data,
+				LButtonCols,
+				"Results for Start Button Sanity Checks (Cols P-Q)",
+			)
 		}
 	}()
 
 	wg.Wait()
-	fmt.Println("Done")
 }
 
 func makeResultsTable(results [][]string) *table.Table {
@@ -177,11 +185,16 @@ func getSheetDataFromResp(resp *http.Response) ([][]string, error) {
 	}
 }
 
-func printResultTable(data [][]string, cols []int) {
+func printResultTable(data [][]string, cols []int, header string) {
 	results, count := sanityCheck(data, cols)
 	if count > 0 {
-		fmt.Println(makeResultsTable(results).String())
-		fmt.Println(countStyle.Render(fmt.Sprintf("Sanity checks failed: %d", count)))
+		f := lipgloss.JoinVertical(
+			lipgloss.Left,
+			header,
+			makeResultsTable(results).String(),
+			countStyle.Render(fmt.Sprintf("Sanity checks failed: %d\n", count)),
+		)
+		fmt.Println(f)
 	} else {
 		fmt.Println("All sanity checks passed!")
 	}
@@ -203,6 +216,6 @@ func printTestResultTable() {
 	if data, err := getSheetDataFromFile("test.csv"); err != nil {
 		panic(err)
 	} else {
-		printResultTable(data, AButtonCols)
+		printResultTable(data, AButtonCols, "Test Results for A Buttons")
 	}
 }
