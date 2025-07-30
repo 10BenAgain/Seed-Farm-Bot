@@ -15,8 +15,8 @@ FLAGS 	:= -Wall -Wextra -g
 AVR		:= -DF_CPU=$(CLOCK) -mmcu=$(CHIP)
 
 #----------- BOT VALUES ----------------------------------#
+START		:= 2075			 
 SEEDS 		:= 2000			 # Number of seeds to store
-START 		:= 2075			 # Starting point for timer
 BUTTON 		:= A			 # A, L, START
 INTERVAL 	:= HALF 		 # DEFAULT, HALF, QUARTER
 

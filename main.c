@@ -16,22 +16,6 @@
 
 #define INCREMENT
 
-#ifndef DEFAULT
-    #define DEFAULT
-#endif
-
-#ifndef SEED_BUTTON_A
-    #define SEED_BUTTON_A
-#endif
-
-#ifndef SEEDS_TO_STORE
-    #define SEEDS_TO_STORE 2000
-#endif
-
-#ifndef START
-    #define START 2075
-#endif
-
 // How many frames it takes to get from save select to over world
 #define LOAD_INTO_GAME      250
 
