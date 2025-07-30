@@ -14,13 +14,25 @@
  * result interval by even divisors (33524 / 2, 4) where 2 = 16762 and 4 = 8381
 */
 
-#define HALF
 #define INCREMENT
-#define SEED_BUTTON_START // START or L or A
 
-#define SEEDS_TO_STORE      2000
-#define START               2075 // First frame
-#define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to overworld
+#ifndef DEFAULT
+    #define DEFAULT
+#endif
+
+#ifndef SEED_BUTTON_A
+    #define SEED_BUTTON_A
+#endif
+
+#ifndef SEEDS_TO_STORE
+    #define SEEDS_TO_STORE 2000
+#endif
+
+#ifndef START
+    #define START 2075
+#endif
+
+#define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to over world
 #define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
@@ -141,7 +153,8 @@ int main(void) {
 #ifdef QUARTER
         if (increment < 3) { increment++;}
         else {
-            increment = 0; start++;
+            increment = 0;
+            start++;
         }
 #endif
 #endif

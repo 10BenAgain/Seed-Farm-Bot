@@ -1,20 +1,35 @@
-CC    := avr-gcc
-COPY  := avr-objcopy
+# --------- COMPILER & AVR Programs -----------------------#
+CC    	:= avr-gcc
+COPY  	:= avr-objcopy
+DUDE  	:= avrdude
 
-PROG  := main
-PORT  := COM4
-DUDE  := avrdude
+#---------- ARDUINO settings -----------------------------#
+PROG  	:= main
+PORT  	:= COM4
+CLOCK 	:= 16000000UL
+CHIP  	:= atmega328p
 
-CLOCK := 16000000UL
-CHIP  := atmega328p
+#---------- FLAGS & PARAMS ------------------------------#
+OPT   	:= -Os -mcall-prologues
+FLAGS 	:= -Wall -Wextra -g
+AVR		:= -DF_CPU=$(CLOCK) -mmcu=$(CHIP)
 
-OPT   := -Os -mcall-prologues
-FLAGS := -Wall -Wextra -g
+#----------- BOT VALUES ----------------------------------#
+SEEDS 		:= 2000			 # Number of seeds to store
+START 		:= 2075			 # Starting point for timer
+BUTTON 		:= A			 # A, L, START
+INTERVAL 	:= HALF 		 # DEFAULT, HALF, QUARTER
+
+CDEFS		:= 					\
+	-D$(INTERVAL) 				\
+	-DSEED_BUTTON_$(BUTTON) 	\
+	-DSTART=$(START) 			\
+	-DSEEDS_TO_STORE=$(SEEDS) 	\
 
 all: $(PROG).hex
 
 $(PROG).hex: $(PROG).c
-	$(CC) $(FLAGS) $(OPT) -DF_CPU=$(CLOCK) -mmcu=$(CHIP) -o $(PROG).elf $(PROG).c
+	$(CC) $(FLAGS) $(OPT) $(AVR) $(CDEFS) -o $(PROG).elf $(PROG).c
 	$(COPY) -O ihex -R .eeprom $(PROG).elf $(PROG).hex
 
 flash: $(PROG).hex
