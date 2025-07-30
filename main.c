@@ -32,8 +32,11 @@
     #define START 2075
 #endif
 
-#define LOAD_INTO_GAME      250  // How many frames it takes to get from save select to over world
-#define WAIT_FOR_SAVE_MENU  350  // How long to hold seed button down for after timer is up to get to save select menu
+// How many frames it takes to get from save select to over world
+#define LOAD_INTO_GAME      250
+
+// How long to hold seed button down for after timer is up to get to save select menu
+#define WAIT_FOR_SAVE_MENU  350
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
 
