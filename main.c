@@ -114,9 +114,9 @@ int main(void) {
 
 #ifdef INCREMENT
         WaitFrames(DEFAULT_INTERVAL(start));             /* Wait for the intro timer to play out and increment timer by desired frame interval */
-#if defined HALF || defined QUARTER
-        WaitFrames(increment);
-#endif
+    #if defined HALF || defined QUARTER
+            WaitFrames(increment);
+    #endif
 #else
         WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
 #endif
@@ -143,23 +143,26 @@ int main(void) {
         WaitFrames(DEFAULT_INTERVAL(30));                 /* Wait short interval                     */
 
 #ifdef INCREMENT
-#ifdef DEFAULT
-        start++;
-#endif
-#ifdef HALF
-        if (increment < 1) { increment++; }
-        else {
-            increment = 0;
+    #ifdef DEFAULT
             start++;
-        }
-#endif
-#ifdef QUARTER
-        if (increment < 3) { increment++;}
-        else {
-            increment = 0;
-            start++;
-        }
-#endif
+    #endif
+
+    #ifdef HALF
+            if (increment < 1) { increment++; }
+            else {
+                increment = 0;
+                start++;
+            }
+    #endif
+
+    #ifdef QUARTER
+            if (increment < 3) { increment++;}
+            else {
+                increment = 0;
+                start++;
+            }
+    #endif
+
 #endif
     }
 }
