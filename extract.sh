@@ -33,10 +33,16 @@ REPO_DIR="/home/ben/seedfarm/fire_red_seeds/carduino"
 
 # Holy escape sequences... 
 echo "Fetching values from remote client's Makefile..."
-START=$(ssh "$USER_NAME@$CLIENT" "cd $REPO_DIR && awk -F':=' '/^START/ { gsub(/[[:space:]]/, \"\", \$2); print \$2 }' Makefile")
-    echo "  -> Found start value: $START"
 
-BUTTON=$(ssh "$USER_NAME@$CLIENT" "cd $REPO_DIR && awk -F':=' '/^BUTTON/ { gsub(/[[:space:]]/, \"\", \$2); print \$2 }' Makefile")
+read -r START BUTTON < <(
+    ssh "$USER_NAME@$CLIENT" "cd $REPO_DIR && 
+        awk -F':=' '
+            /^START/  { gsub(/[[:space:]]/, \"\", \$2); start=\$2 }
+            /^BUTTON/ { gsub(/[[:space:]]/, \"\", \$2); button=\$2 }
+            END { print start, button }
+        ' Makefile"
+)
+    echo "  -> Found start value: $START"
     echo "  -> Found button: $BUTTON"
 
 # Run python script to generate properly named .sav file
