@@ -59,10 +59,10 @@ func main() {
 		return data, err
 	}
 
-	wg.Add(1)
+	wg.Add(3)
+
 	go func() {
 		defer wg.Done()
-
 		if data, err := gt(); err != nil {
 			panic(err)
 		} else {
@@ -74,10 +74,8 @@ func main() {
 		}
 	}()
 
-	wg.Add(1)
 	go func() {
 		defer wg.Done()
-
 		if data, err := gt(); err != nil {
 			panic(err)
 		} else {
@@ -89,10 +87,8 @@ func main() {
 		}
 	}()
 
-	wg.Add(1)
 	go func() {
 		defer wg.Done()
-
 		if data, err := gt(); err != nil {
 			panic(err)
 		} else {
