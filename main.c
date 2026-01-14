@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "btn.h"
+
 /* How Frame Interval is calculated
  * 59.65549883230804 FPS = 16.76291405778042 MS = 0.016762914057780419624 Seconds
  * Target period is 0.016762914057780419624
@@ -15,6 +17,7 @@
 */
 
 #define INCREMENT
+#define STARTUP_R
 
 // How many frames it takes to get from save select to over world
 #define LOAD_INTO_GAME      250
@@ -23,12 +26,6 @@
 #define WAIT_FOR_SAVE_MENU  350
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
-
-#define A_BTN   (1 << PORTD2)
-#define B_BTN   (1 << PORTD3)
-#define L_BTN   (1 << PORTD4)
-#define ST_BTN  (1 << PORTD5)
-#define PWR_BTN (1 << PORTC1)
 
 #ifdef DEFAULT
     #define F_INTERVAL 33524
@@ -94,29 +91,35 @@ int main(void) {
         WaitFrames(DEFAULT_INTERVAL(400));               /* Wait about 8 seconds, this can probably be shortened                 */
         PressA(DEFAULT_INTERVAL(1));                     /* Continue into the Main DS menu                                       */
         WaitFrames(DEFAULT_INTERVAL(180));               /* Wait about 3 seconds until we are ready to Press A to start the game */
+            #ifdef STARTUP_R
+                PORTD ^= R_BTN;
+            #endif
         PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game                                        */
 
-#ifdef INCREMENT
-        WaitFrames(DEFAULT_INTERVAL(start));             /* Wait for the intro timer to play out and increment timer by desired frame interval */
-    #if defined HALF || defined QUARTER
-            WaitFrames(increment);
+    #ifdef INCREMENT
+            WaitFrames(DEFAULT_INTERVAL(start));         /* Wait for the intro timer to play out and increment timer by desired frame interval */
+        #if defined HALF || defined QUARTER
+                WaitFrames(increment);
+        #endif
+    #else
+            WaitFrames(DEFAULT_INTERVAL(START));         /* Wait for the intro timer to play out */
     #endif
-#else
-        WaitFrames(DEFAULT_INTERVAL(START));             /* Wait for the intro timer to play out */
-#endif
 
-#ifdef SEED_BUTTON_L
-        PressL(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold L until save select Menu is ready  */
-#endif
+    #ifdef SEED_BUTTON_L
+            PressL(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));    /* Hold L until save select Menu is ready  */
+    #endif
 
-#ifdef SEED_BUTTON_START
-        PressStart(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU)); /* Hold Start until save select Menu is ready  */
-#endif
+    #ifdef SEED_BUTTON_START
+            PressStart(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU)); /* Hold Start until save select Menu is ready  */
+    #endif
 
-#ifdef SEED_BUTTON_A
-        PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU));     /* Hold A until save select Menu is ready  */
-#endif
+    #ifdef SEED_BUTTON_A
+            PressA(DEFAULT_INTERVAL(WAIT_FOR_SAVE_MENU)); /* Hold A until save select Menu is ready  */
+    #endif
         WaitFrames(DEFAULT_INTERVAL(2));                  /* Wait a short delay before pressing A    */
+            #ifdef STARTUP_R
+                    PORTD ^= R_BTN;
+            #endif
         PressA(DEFAULT_INTERVAL(1));                      /* Select save file                        */
         WaitFrames(DEFAULT_INTERVAL(LOAD_INTO_GAME));     /* Wait until recap starts playing         */
         PressB(DEFAULT_INTERVAL(1));                      /* Press B to skip recap                   */
@@ -163,6 +166,13 @@ PressB(uint32_t duration) {
     PORTD ^= B_BTN;
     WaitFrames(duration);
     PORTD ^= B_BTN;
+}
+
+__attribute__((unused)) void
+PressR(uint32_t duration) {
+    PORTD ^= R_BTN;
+    WaitFrames(duration);
+    PORTD ^= R_BTN;
 }
 
 #ifdef SEED_BUTTON_L
