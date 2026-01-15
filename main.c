@@ -48,6 +48,8 @@ void WaitFrames(uint32_t frames);
 
 void PressA(uint32_t duration);
 void PressB(uint32_t duration);
+
+__attribute__((unused)) void PressR(uint32_t duration);
 void PressPower(uint32_t duration);
 
 #ifdef SEED_BUTTON_L
