@@ -93,10 +93,10 @@ int main(void) {
         WaitFrames(DEFAULT_INTERVAL(400));               /* Wait about 8 seconds, this can probably be shortened                 */
         PressA(DEFAULT_INTERVAL(1));                     /* Continue into the Main DS menu                                       */
         WaitFrames(DEFAULT_INTERVAL(180));               /* Wait about 3 seconds until we are ready to Press A to start the game */
-            #ifdef STARTUP_R
-                PORTD ^= R_BTN;
-            #endif
         PressA(DEFAULT_INTERVAL(1));                     /* Press Start to start the game                                        */
+            #ifdef STARTUP_R
+                    PORTD ^= R_BTN;
+            #endif
 
     #ifdef INCREMENT
             WaitFrames(DEFAULT_INTERVAL(start));         /* Wait for the intro timer to play out and increment timer by desired frame interval */
