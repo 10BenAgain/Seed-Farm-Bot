@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char* file = "../Makefile";
+const char* file = "Makefile";
 
 int main(int argc, char* argv[])
 {
