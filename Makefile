@@ -5,26 +5,17 @@ DUDE  	:= avrdude
 
 #---------- ARDUINO settings -----------------------------#
 PROG  	:= main
-PORT  	:= COM4
+PORT  	:= COM1
 CLOCK 	:= 16000000UL
 CHIP  	:= atmega328p
 
-#---------- FLAGS & PARAMS ------------------------------#
+#---------- FLAGS & PARAMS -------------------------------#
 OPT   	:= -Os -mcall-prologues
 FLAGS 	:= -Wall -Wextra -g
 AVR		:= -DF_CPU=$(CLOCK) -mmcu=$(CHIP)
 
 #----------- BOT VALUES ----------------------------------#
-START		:= 2075			 
-SEEDS 		:= 2000			 
-BUTTON 		:= A			 
-INTERVAL 	:= HALF 		 # DEFAULT, HALF, QUARTER
-
-CDEFS		:= 					\
-	-D$(INTERVAL) 				\
-	-DSEED_BUTTON_$(BUTTON) 	\
-	-DSTART=$(START) 			\
-	-DSEEDS_TO_STORE=$(SEEDS) 	\
+CDEFS := -DDEFAULT -DSEED_BUTTON_A -DSTART=6969 -DSEEDS_TO_STORE=2000
 
 all: $(PROG).hex
 
