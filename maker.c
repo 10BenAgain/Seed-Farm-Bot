@@ -43,33 +43,30 @@ int main(int argc, char* argv[])
             fp, "#---------- FLAGS & PARAMS -------------------------------#\n"
                 "OPT   \t:= -Os -mcall-prologues\n"
                 "FLAGS \t:= -Wall -Wextra -g\n"
-                "AVR\t\t:= -DF_CPU=$(CLOCK) -mmcu=$(CHIP)\n\n"
+                "AVR \t\t:= -DF_CPU=$(CLOCK) -mmcu=$(CHIP)\n\n"
             );
 
     fprintf(
             fp, "#----------- BOT VALUES ----------------------------------#\n"
-                "START\t\t:= %s\t\t\t \n"
-                "SEEDS \t\t:= %s\t\t\t \n"
-                "BUTTON \t\t:= %s\t\t\t \n"
-                "INTERVAL \t:= %s \t\t\n\n"
-                "CDEFS\t\t:= \t\t\t\t\t\\\n"
-                "\t-D$(INTERVAL) \t\t\t\t\\\n"
-                "\t-DSEED_BUTTON_$(BUTTON) \t\\\n"
-                "\t-DSTART=$(START) \t\t\t\\\n"
-                "\t-DSEEDS_TO_STORE=$(SEEDS) \t\\\n\n",
+                "START\t\t:= %s\n"
+                "SEEDS \t\t:= %s\n"
+                "BUTTON \t\t:= %s\n"
+                "INTERVAL \t:= %s\n\n"
+                "CDEFS\t\t:= \\\n"
+                "\t-D$(INTERVAL)\\\n"
+                "\t-DSEED_BUTTON_$(BUTTON)\\\n"
+                "\t-DSTART=$(START)\\\n"
+                "\t-DSEEDS_TO_STORE=$(SEEDS)\\\n\n",
                  start, seeds, button, interval
             );
 
     fprintf(
-            fp, "all: $(PROG).hex\n"
-                "\n"
+            fp, "all: $(PROG).hex\n\n"
                 "$(PROG).hex: $(PROG).c\n"
                 "\t$(CC) $(FLAGS) $(OPT) $(AVR) $(CDEFS) -o $(PROG).elf $(PROG).c\n"
-                "\t$(COPY) -O ihex -R .eeprom $(PROG).elf $(PROG).hex\n"
-                "\n"
+                "\t$(COPY) -O ihex -R .eeprom $(PROG).elf $(PROG).hex\n\n"
                 "flash: $(PROG).hex\n"
-                "\t$(DUDE) -c arduino -p $(CHIP) -P $(PORT) -b 115200 -U flash:w:$(PROG).hex\n"
-                "\n"
+                "\t$(DUDE) -c arduino -p $(CHIP) -P $(PORT) -b 115200 -U flash:w:$(PROG).hex\n\n"
                 "clean:\n"
                 "\trm -f *.o *.elf *.hex\n"
                 ".PHONY: clean"
@@ -77,7 +74,7 @@ int main(int argc, char* argv[])
 
     fclose(fp);
 
-    system("make flash");
+//    system("make flash");
 
     return 0;
 }
