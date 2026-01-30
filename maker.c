@@ -7,6 +7,7 @@ int main(int argc, char* argv[])
 {
     if (argc < 6) {
         printf("Missing command line arguments..\n");
+        return -1;
     }
 
     char* port = argv[1];
@@ -47,8 +48,16 @@ int main(int argc, char* argv[])
 
     fprintf(
             fp, "#----------- BOT VALUES ----------------------------------#\n"
-                "CDEFS := -D%s -DSEED_BUTTON_%s -DSTART=%s -DSEEDS_TO_STORE=%s\n\n",
-                interval, button, start, seeds
+                "START\t\t:= %s\t\t\t \n"
+                "SEEDS \t\t:= %s\t\t\t \n"
+                "BUTTON \t\t:= %s\t\t\t \n"
+                "INTERVAL \t:= %s \t\t\n\n"
+                "CDEFS\t\t:= \t\t\t\t\t\\\n"
+                "\t-D$(INTERVAL) \t\t\t\t\\\n"
+                "\t-DSEED_BUTTON_$(BUTTON) \t\\\n"
+                "\t-DSTART=$(START) \t\t\t\\\n"
+                "\t-DSEEDS_TO_STORE=$(SEEDS) \t\\\n\n",
+                 start, seeds, button, interval
             );
 
     fprintf(
