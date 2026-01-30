@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 
     fclose(fp);
 
-//    system("make flash");
+    system("make flash");
 
     return 0;
 }
