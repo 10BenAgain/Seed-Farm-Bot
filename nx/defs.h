@@ -1,7 +1,9 @@
 #ifndef VALS_H
 #define VALS_H
 
-/* How Frame Interval is calculated
+/* How Frame Interval is calculated /*
+---------------------------------------------------------------------------------------
+
  * 59.65549883230804 FPS = 16.76291405778042 MS = 0.016762914057780419624 Seconds
  * Target period is 0.016762914057780419624
  * Rounding down to 0.016762 should be accurate enough,
@@ -20,7 +22,16 @@
 // Half = 16666
 // Quarter = 8333
 
+// GBA 16.7427 MS
+// 0.016742 * (16000000 / 8) == 33484
+// Default = 33484
+// Half = 16742
+// Quarter = 8371
+
 #ifdef DEFAULT
+#       ifdef GBA
+#           define F_INTERVAL 33484
+#       endif
 #       ifdef NDS
 #           define F_INTERVAL 33524
 #       endif
@@ -31,6 +42,9 @@
 #endif
 
 #ifdef HALF
+#       ifdef GBA
+#           define F_INTERVAL 16742
+#       endif
 #       ifdef NDS
 #           define F_INTERVAL 16762
 #       endif
@@ -41,6 +55,9 @@
 #endif
 
 #ifdef QUARTER
+#       ifdef GBA
+#           define F_INTERVAL 8371
+#       endif
 #       ifdef NDS
 #           define F_INTERVAL 8381
 #       endif
