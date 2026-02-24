@@ -27,7 +27,7 @@
 #       ifdef NX1
 #           define F_INTERVAL 33332
 #       endif
-#   define _DI(x) ((x))
+#   define DI(x) ((x))
 #endif
 
 #ifdef HALF
@@ -37,7 +37,7 @@
 #       ifdef NX1
 #           define F_INTERVAL 16666
 #       endif
-#   define _DI(x) ((x)*2)
+#   define DI(x) ((x)*2)
 #endif
 
 #ifdef QUARTER
@@ -47,7 +47,7 @@
 #       ifdef NX1
 #           define F_INTERVAL 8333
 #       endif
-#   define _DI(x) ((x)*4)
+#   define DI(x) ((x)*4)
 #endif
 
 #endif

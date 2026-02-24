@@ -17,9 +17,9 @@ AVR		:= -mmcu=$(CHIP) -DF_CPU=$(CLOCK)
 #----------- BOT VALUES ----------------------------------#
 START		:= 2075
 SEEDS 		:= 30
-CONSOLE		:= NDS
+CONSOLE		:= NX1
 BUTTON 		:= A
-INTERVAL 	:= HALF
+INTERVAL 	:= DEFAULT
 
 CDEFS		:= \
 	-D$(CONSOLE)\
