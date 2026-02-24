@@ -1,0 +1,42 @@
+# --------- COMPILER & AVR Programs -----------------------#
+CC    	:= avr-gcc
+COPY  	:= avr-objcopy
+DUDE  	:= avrdude
+
+#---------- ARDUINO settings -----------------------------#
+PROG  	:= main
+PORT  	:= COM7
+CLOCK 	:= 16000000UL
+CHIP  	:= atmega328p
+
+#---------- FLAGS & PARAMS -------------------------------#
+OPT   	:= -Os -mcall-prologues
+FLAGS 	:= -Wall -Wextra -g
+AVR		:= -mmcu=$(CHIP) -DF_CPU=$(CLOCK)
+
+#----------- BOT VALUES ----------------------------------#
+START		:= 2075
+SEEDS 		:= 30
+CONSOLE		:= NDS
+BUTTON 		:= A
+INTERVAL 	:= HALF
+
+CDEFS		:= \
+	-D$(CONSOLE)\
+	-D$(INTERVAL)\
+	-DSEED_BUTTON_$(BUTTON)\
+	-DSTART=$(START)\
+	-DSEEDS_TO_STORE=$(SEEDS)\
+
+all: $(PROG).hex
+
+$(PROG).hex: $(PROG).c
+	$(CC) $(FLAGS) $(OPT) $(AVR) $(CDEFS) -o $(PROG).elf $(PROG).c
+	$(COPY) -O ihex -R .eeprom $(PROG).elf $(PROG).hex
+
+flash: $(PROG).hex
+	$(DUDE) -c arduino -p $(CHIP) -P $(PORT) -b 115200 -U flash:w:$(PROG).hex
+
+clean:
+	rm -f *.o *.elf *.hex
+.PHONY: clean
