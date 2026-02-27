@@ -1,9 +1,7 @@
 #ifndef VALS_H
 #define VALS_H
 
-/* How Frame Interval is calculated /*
----------------------------------------------------------------------------------------
-
+/* How Frame Interval is calculated
  * 59.65549883230804 FPS = 16.76291405778042 MS = 0.016762914057780419624 Seconds
  * Target period is 0.016762914057780419624
  * Rounding down to 0.016762 should be accurate enough,
