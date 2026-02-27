@@ -46,6 +46,12 @@ int main(void) {
 
     OR_EQ_LS1(TIMSK1, OCIE1A)
 
+    // Make sure the controller is connected. Do once
+    WaitFrames(DI(180));
+    PressHome(DI(10));
+    WaitFrames(DI(180));
+    PressHome(DI(10));
+
 #ifdef INCREMENT
     uint32_t start = START;
     #if defined HALF || defined QUARTER
