@@ -26,6 +26,11 @@
 // Half = 16742
 // Quarter = 8371
 
+// 120 FPS = 0.008333
+// 0.008333 * (16000000 / 8 ) = 16666
+// Default = 16666
+// Half = 8333
+
 #ifdef DEFAULT
 #       ifdef GBA
 #           define F_INTERVAL 33484
@@ -35,6 +40,9 @@
 #       endif
 #       ifdef NX1
 #           define F_INTERVAL 33332
+#       endif
+#       ifdef NX2
+#           define F_INTERVAL 16666
 #       endif
 #   define DI(x) ((x))
 #endif
@@ -48,6 +56,9 @@
 #       endif
 #       ifdef NX1
 #           define F_INTERVAL 16666
+#       endif
+#       ifdef NX2
+#           define F_INTERVAL 8333
 #       endif
 #   define DI(x) ((x)*2)
 #endif

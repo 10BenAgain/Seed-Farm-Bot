@@ -21,15 +21,9 @@ void WaitFrames(uint32_t frames);
 void PressA(uint32_t duration);
 void PressB(uint32_t duration);
 void PressX(uint32_t duration);
+void PressDown(uint32_t duration);
+void PressStart(uint32_t duration);
 void PressHome(uint32_t duration);
-
-#ifdef SEED_BUTTON_L
-    void PressL(uint32_t duration);
-#endif
-
-#ifdef SEED_BUTTON_START
-    void PressStart(uint32_t duration);
-#endif
 
 int main(void) {
     /* Board setup */
@@ -65,8 +59,6 @@ int main(void) {
     for (size_t j = 0; j < SEEDS_TO_STORE; j++) {
 #endif
         WaitFrames(DI(180));                    // Small delay while on HOME MENU
-        PressA(DI(10));                         // Press A to launch GBA NSO
-        WaitFrames(DI(680));                    // Wait to get into launcher
         PressA(DI(10));                         // Launch the game
             #ifdef STARTUP_R
                     PORTD ^= R_BTN;
@@ -103,9 +95,21 @@ int main(void) {
         PressA(DI(10));                         // Talk to sister
         WaitFrames(DI(148));                    // Wait for seed write and dialog box
         PressB(DI(10));                         // Exit dialog Box
-        WaitFrames(DI(130));                    // Wait short interval
+        WaitFrames(DI(150));                    // Wait short interval
+        PressStart(DI(10));                     // Open start menu
+        WaitFrames(DI(40));                     // 
+        PressDown(DI(10));                      // 
+        WaitFrames(DI(20));                     // Get down to save option
+        PressDown(DI(10));                      //
+        WaitFrames(DI(20));                     //
+        PressA(DI(10));                         //
+        WaitFrames(DI(120));                    //
+        PressA(DI(10));                         // Save the game
+        WaitFrames(DI(120));                    //
+        PressA(DI(10));                         //
+        WaitFrames(DI(300));                    //
         PressHome(DI(10));                      // Exit Game
-        WaitFrames(DI(480));                    // Wait till home screen
+        WaitFrames(DI(180));                    // Wait till home screen
         PressX(DI(10));                         // Press X to get close menu
         WaitFrames(DI(130));                    // Wait a short time
         PressA(DI(10));                         // Press A to exit the game
@@ -164,31 +168,19 @@ void PressHome(uint32_t duration)
     PORTD ^= HOME_BTN;
 }
 
-__attribute__((unused))
-void PressR(uint32_t duration)
+void PressDown(uint32_t duration)
 {
-    PORTD ^= R_BTN;
+    PORTC ^= DOWN_BTN;
     WaitFrames(duration);
-    PORTD ^= R_BTN;
+    PORTC ^= DOWN_BTN;
 }
 
-#ifdef SEED_BUTTON_L
-__attribute__((unused))
-void PressL(uint32_t duration) {
-        PORTD ^= L_BTN;
-        WaitFrames(duration);
-        PORTD ^= L_BTN;
+void PressStart(uint32_t duration) 
+{
+    PORTD ^= START_BTN;
+    WaitFrames(duration);
+    PORTD ^= START_BTN;
 }
-#endif
-
-#ifdef SEED_BUTTON_START
-__attribute__((unused))
-void PressStart(uint32_t duration) {
-        PORTD ^= ST_BTN;
-        WaitFrames(duration);
-        PORTD ^= ST_BTN;
-    }
-#endif
 
 void WaitFrames(uint32_t frames) {
     uint32_t counter = 0;
