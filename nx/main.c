@@ -8,10 +8,10 @@
 #define INCREMENT
 
 // How many frames it takes to get from save select to over world
-#define LOAD_INTO_GAME      250
+#define LOAD_INTO_GAME      160
 
 // How long to hold seed button down for after timer is up to get to save select menu
-#define WAIT_FOR_SAVE_MENU  350
+#define WAIT_FOR_SAVE_MENU  300
 
 #define OR_EQ_LS1(x,y)  ((x)|=(1<<(y)));
 #define RESET_TIMER (TCNT1 = 0);
@@ -58,7 +58,7 @@ int main(void) {
 #else
     for (size_t j = 0; j < SEEDS_TO_STORE; j++) {
 #endif
-        WaitFrames(DI(180));                    // Small delay while on HOME MENU
+        WaitFrames(DI(40));                    // Small delay while on HOME MENU
         PressA(DI(10));                         // Launch the game
             #ifdef STARTUP_R
                     PORTD ^= R_BTN;
@@ -93,27 +93,27 @@ int main(void) {
         PressB(DI(10));                         // Press B to skip recap
         WaitFrames(DI(LOAD_INTO_GAME));         // Wait until overworld
         PressA(DI(10));                         // Talk to sister
-        WaitFrames(DI(148));                    // Wait for seed write and dialog box
+        WaitFrames(DI(40));                    // Wait for seed write and dialog box
         PressB(DI(10));                         // Exit dialog Box
-        WaitFrames(DI(150));                    // Wait short interval
+        WaitFrames(DI(40));                    // Wait short interval
         PressStart(DI(10));                     // Open start menu
         WaitFrames(DI(40));                     // 
         PressDown(DI(10));                      // 
-        WaitFrames(DI(20));                     // Get down to save option
+        WaitFrames(DI(12));                     // Get down to save option
         PressDown(DI(10));                      //
-        WaitFrames(DI(20));                     //
+        WaitFrames(DI(12));                     //
         PressA(DI(10));                         //
-        WaitFrames(DI(120));                    //
+        WaitFrames(DI(60));                    //
         PressA(DI(10));                         // Save the game
-        WaitFrames(DI(120));                    //
+        WaitFrames(DI(60));                    //
         PressA(DI(10));                         //
-        WaitFrames(DI(300));                    //
+        WaitFrames(DI(80));                    //
         PressHome(DI(10));                      // Exit Game
-        WaitFrames(DI(180));                    // Wait till home screen
+        WaitFrames(DI(50));                    // Wait till home screen
         PressX(DI(10));                         // Press X to get close menu
-        WaitFrames(DI(130));                    // Wait a short time
+        WaitFrames(DI(60));                    // Wait a short time
         PressA(DI(10));                         // Press A to exit the game
-        WaitFrames(DI(180));                    // Wait for the game to exit
+        WaitFrames(DI(20));                    // Wait for the game to exit
 
 #ifdef INCREMENT
     #ifdef DEFAULT
